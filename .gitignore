@@ -1,0 +1,7 @@
+# Sauvegardes intermediaires du bundle (16 Mo chacune, ~40 fichiers)
+# Seuls index.html courant et la version pre-entracte sont conserves.
+index.html.pre-*
+index.html.GOOD-*
+index.html.bak*
+*.bak
+node_modules/

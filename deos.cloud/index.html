@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr" data-brand="deos">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEOS — le système d'exploitation d'entreprise</title>
+<meta name="description" content="DEOS · Digital Enterprise Operating System. Une organisation d'agents IA qui exécute et coordonne, gouvernée et souveraine. Vous gardez la stratégie ; l'entreprise apprend.">
+<link rel="canonical" href="https://deos.cloud/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   DEOS — vitrine. Socle repris du shell maison, brand iris.
+   Même mécanique que le hub SH (référence) : neutres inversés
+   en clair, accent assombri AA, i18n FR/EN, bascule thème.
+   ========================================================= */
+:root{
+  --ink:#0A0A0B; --ink-2:#141416; --ink-3:#1C1C1F;
+  --bone:#F5F2EC; --bone-2:#E8E3D9; --bone-3:#B8B2A6; --bone-4:#9A938A;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --rail:1px solid rgba(245,242,236,0.08);
+  --rail-strong:1px solid rgba(245,242,236,0.16);
+  --hairline:rgba(245,242,236,0.10);
+  --accent:#7E77A6; --accent-2:#9A93BE; --accent-3:#4E4869; /* iris */
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --ink:#F5F2EC; --ink-2:#ECE7DC; --ink-3:#E0DACB;
+  --bone:#1A1A1B; --bone-2:#2E2E33; --bone-3:#4A463F; --bone-4:#635F57;
+  --rail:1px solid rgba(26,26,27,0.10);
+  --rail-strong:1px solid rgba(26,26,27,0.18);
+  --hairline:rgba(26,26,27,0.14);
+  --accent:#4E4869; --accent-2:#3B3651; --accent-3:#7E77A6; /* 7.66:1 ✓ */
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;padding:0;background:var(--ink);color:var(--bone);
+  font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{min-height:100vh;position:relative;overflow-x:hidden;transition:background .4s ease,color .4s ease}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:1px}
+
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.04;mix-blend-mode:overlay;z-index:2;width:100%;height:100%}
+.skip{position:absolute;left:-999px;top:8px;z-index:50;background:var(--accent);color:var(--ink);
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:10px 16px;text-decoration:none}
+.skip:focus{left:16px}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:10;padding:20px clamp(20px,4vw,48px);
+  display:flex;justify-content:space-between;align-items:center;gap:20px;
+  border-bottom:var(--rail);background:color-mix(in srgb,var(--ink) 82%,transparent);backdrop-filter:blur(10px)}
+.brand{display:inline-flex;align-items:center;gap:14px;color:var(--bone);text-decoration:none}
+.brand .wm{font-family:var(--serif);font-size:23px;font-weight:500;letter-spacing:.02em;line-height:1}
+.brand .wm em{font-style:normal;color:var(--accent)}
+.brand .kicker{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone-4);padding-left:14px;border-left:var(--rail-strong);line-height:1.4}
+.nav{display:flex;align-items:center;gap:clamp(14px,2.2vw,28px)}
+.nav a{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--bone-3);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--bone)}
+.controls{display:flex;align-items:center;gap:10px}
+.lang{display:inline-flex;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  border:var(--rail-strong);border-radius:999px;overflow:hidden}
+.lang button{background:transparent;border:none;color:var(--bone-4);padding:6px 11px;cursor:pointer;
+  text-transform:uppercase;transition:.2s;font-family:inherit;font-size:inherit}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--ink)}
+.theme{width:34px;height:34px;border-radius:999px;border:var(--rail-strong);background:transparent;
+  color:var(--bone-3);cursor:pointer;display:grid;place-items:center;transition:.2s;font-size:14px}
+.theme:hover{color:var(--bone);border-color:var(--accent)}
+
+/* ÉDITORIAL */
+.wrap{max-width:1080px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--bone-3);
+  display:inline-flex;align-items:center;gap:14px;margin:0 0 26px}
+.eyebrow::before{content:'';width:32px;height:1px;background:var(--accent)}
+.headline{font-family:var(--serif);font-weight:400;font-size:clamp(42px,6.6vw,88px);line-height:1.02;
+  letter-spacing:-.016em;margin:0 0 22px}
+.headline em{font-style:italic;color:var(--accent);font-weight:400}
+.subtitle{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.3vw,29px);color:var(--bone-3);margin:0 0 30px}
+.lede{font-weight:300;font-size:16.5px;line-height:1.68;color:var(--bone-3);max-width:600px;margin:0 0 38px}
+
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);border:none;border-radius:2px;
+  padding:15px 26px;color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;cursor:pointer;text-decoration:none;transition:background .2s,transform .12s}
+.btn:hover{background:var(--accent-2)}
+.btn:active{transform:scale(.985)}
+.cta-row{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.arrow-link{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--bone-4);text-decoration:none;transition:color .2s}
+.arrow-link::after{content:'→';color:var(--accent);transition:transform .25s}
+.arrow-link:hover{color:var(--bone)}
+.arrow-link:hover::after{transform:translateX(4px)}
+
+/* HERO + comité en étoile */
+.hero{position:relative;overflow:hidden;padding:clamp(56px,10vh,120px) 0 clamp(48px,8vh,96px)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,56px);align-items:center}
+.hero-text{position:relative;z-index:2;max-width:600px}
+.ring{width:100%;max-width:440px;margin:0 auto;display:block}
+.ring .spoke{stroke:var(--hairline);stroke-width:1}
+.ring .node{fill:var(--ink-2);stroke:var(--accent-3);stroke-width:1.2}
+.ring .hub{fill:var(--ink-2);stroke:var(--accent);stroke-width:1.4}
+.ring .lbl{fill:var(--bone-3);font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.03em;text-anchor:middle;dominant-baseline:central}
+.ring .lbl-hub{fill:var(--accent);font-size:13px}
+.ring .halo{fill:none;stroke:var(--accent);stroke-width:1;opacity:.18}
+@media (prefers-reduced-motion:no-preference){
+  .ring .rot{transform-origin:220px 220px;animation:spin 90s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+}
+
+/* FIL CONDUCTEUR (signature partagée maison) */
+.act{display:grid;grid-template-columns:64px 1fr;gap:clamp(20px,3vw,44px);padding:clamp(52px,8vh,96px) 0}
+.rail{position:relative}
+.rail::before{content:'';position:absolute;left:11px;top:-2px;bottom:-2px;width:1px;background:var(--hairline)}
+.act:first-of-type .rail::before{top:14px}
+.act:last-of-type .rail::before{bottom:auto;height:14px}
+.node-no{position:relative;z-index:1;width:24px;height:24px;border-radius:999px;background:var(--ink);
+  border:1px solid var(--accent);color:var(--accent);display:grid;place-items:center;
+  font-family:var(--mono);font-size:10px;font-weight:500}
+.act-label{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone-4);margin:0 0 20px;display:flex;align-items:center;gap:12px}
+.act-label::after{content:'';flex:1;height:1px;background:var(--hairline)}
+.act h2{font-family:var(--serif);font-weight:400;font-size:clamp(30px,4.2vw,50px);line-height:1.06;
+  letter-spacing:-.012em;margin:0 0 18px}
+.act h2 em{font-style:italic;color:var(--accent);font-weight:400}
+.act .intro{font-weight:300;font-size:16px;line-height:1.65;color:var(--bone-3);max-width:620px;margin:0 0 34px}
+
+/* Comparatif Aujourd'hui / Avec DEOS */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:0;border:var(--rail);border-radius:3px;overflow:hidden}
+.compare .col{padding:26px}
+.compare .col+.col{border-left:var(--rail)}
+.compare .ch{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin:0 0 18px}
+.compare .now .ch{color:var(--bone-4)}
+.compare .deos .ch{color:var(--accent)}
+.compare ul{list-style:none;margin:0;padding:0}
+.compare li{font-weight:300;font-size:14px;line-height:1.5;color:var(--bone-3);padding:9px 0 9px 20px;position:relative;border-top:var(--rail)}
+.compare li:first-child{border-top:none}
+.compare .now li::before{content:'—';position:absolute;left:0;color:var(--bone-4)}
+.compare .deos li{color:var(--bone-2)}
+.compare .deos li::before{content:'→';position:absolute;left:0;color:var(--accent)}
+
+/* Grilles génériques */
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.card{border:var(--rail);border-radius:3px;padding:24px;background:var(--ink-2);transition:border-color .25s,transform .25s}
+.card:hover{border-color:var(--accent-3);transform:translateY(-2px)}
+.card .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-4);margin:0 0 12px}
+.card h3{font-family:var(--serif);font-size:23px;font-weight:500;margin:0 0 8px;line-height:1.12}
+.card h3 em{font-style:italic;color:var(--accent)}
+.card p{font-weight:300;font-size:13.5px;line-height:1.6;color:var(--bone-3);margin:0}
+.card .kpi{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--accent);margin:14px 0 0}
+.card .trait{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--bone-4);margin:8px 0 0}
+
+/* Curseur d'autonomie */
+.cursor{display:flex;flex-wrap:wrap;gap:0;border:var(--rail);border-radius:3px;overflow:hidden;margin:0 0 30px}
+.cursor .step{flex:1;min-width:130px;padding:16px 18px;border-left:var(--rail);position:relative}
+.cursor .step:first-child{border-left:none}
+.cursor .n{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em}
+.cursor .t{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--bone-2);margin-top:6px;line-height:1.3}
+
+/* Trois échelles */
+.scales{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.scale{border:var(--rail);border-radius:3px;padding:26px;background:var(--ink-2);position:relative}
+.scale.lead{border-color:var(--accent-3)}
+.scale .lvl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-4);margin:0 0 14px}
+.scale h3{font-family:var(--serif);font-size:26px;font-weight:500;margin:0 0 8px}
+.scale h3 em{font-style:italic;color:var(--accent)}
+.scale .agents{font-family:var(--mono);font-size:12px;color:var(--accent);margin:0 0 12px}
+.scale p{font-weight:300;font-size:13.5px;line-height:1.6;color:var(--bone-3);margin:0}
+.scale .ex{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--bone-4);border:var(--rail-strong);border-radius:999px;padding:4px 10px;margin:0 0 14px}
+
+/* CONTACT + FOOTER */
+.contact{padding:clamp(60px,10vh,120px) 0;border-top:var(--rail);text-align:center}
+.contact h2{font-family:var(--serif);font-weight:400;font-size:clamp(34px,5vw,58px);margin:0 0 18px;letter-spacing:-.014em}
+.contact h2 em{font-style:italic;color:var(--accent);font-weight:400}
+.contact p{font-weight:300;font-size:16.5px;line-height:1.65;color:var(--bone-3);max-width:520px;margin:0 auto 34px}
+.footer{padding:26px clamp(20px,4vw,48px);border-top:var(--rail);display:flex;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;align-items:center;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-4)}
+.footer a{color:var(--bone-3);text-decoration:none;transition:color .2s}
+.footer a:hover{color:var(--accent)}
+.footer .maison a{color:var(--accent)}
+
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media (max-width:860px){ .hero-grid{grid-template-columns:1fr} .ring{max-width:360px;margin-top:20px} }
+@media (max-width:760px){
+  .nav{display:none}
+  .act{grid-template-columns:1fr;gap:16px}
+  .rail{display:flex;align-items:center;gap:12px}
+  .rail::before{display:none}
+  .rail::after{content:'';flex:1;height:1px;background:var(--hairline)}
+  .compare{grid-template-columns:1fr}.compare .col+.col{border-left:none;border-top:var(--rail)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip" data-i18n="skip">Aller au contenu</a>
+
+<svg class="grain" preserveAspectRatio="none" aria-hidden="true">
+  <filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/></filter>
+  <rect width="100%" height="100%" filter="url(#g)"/>
+</svg>
+
+<header class="topbar">
+  <a href="#" class="brand" aria-label="DEOS">
+    <span class="wm">DE<em>OS</em></span>
+    <span class="kicker">Digital Enterprise<br>Operating System</span>
+  </a>
+  <nav class="nav" aria-label="Sections">
+    <a href="#renversement" data-i18n="nav.1">Le renversement</a>
+    <a href="#comite" data-i18n="nav.2">Le comité</a>
+    <a href="#gouvernance" data-i18n="nav.3">La gouvernance</a>
+    <a href="#echelles" data-i18n="nav.4">Trois échelles</a>
+    <a href="#contact" data-i18n="nav.5">Accès</a>
+  </nav>
+  <div class="controls">
+    <div class="lang" role="group" aria-label="Langue / Language">
+      <button data-lang="fr" aria-pressed="true">FR</button>
+      <button data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <button class="theme" aria-label="Basculer le thème clair / sombre" aria-pressed="false">◐</button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <!-- HERO -->
+  <section class="hero reveal">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <p class="eyebrow" data-i18n="hero.eyebrow">DEOS · le système d'exploitation d'entreprise</p>
+        <h1 class="headline" data-i18n="hero.h1">Pas un assistant. Un <em>système d'exploitation</em> d'entreprise.</h1>
+        <p class="subtitle" data-i18n="hero.sub">Vous ne manipulez plus des logiciels. Vous dialoguez avec votre entreprise.</p>
+        <p class="lede" data-i18n="hero.lede">Vous gardez la stratégie et l'arbitrage. Une organisation d'agents prend l'exécution et la coordination — sur une mémoire unique et gouvernée, avec des décisions tracées et justifiées. Une entreprise qui apprend, en continu.</p>
+        <div class="cta-row">
+          <a href="#contact" class="btn" data-i18n="hero.cta">Demander un accès</a>
+          <a href="#comite" class="arrow-link" data-i18n="hero.cta2">Voir le comité</a>
+        </div>
+      </div>
+      <div aria-hidden="true">
+        <svg class="ring" viewBox="0 0 440 440" role="img" aria-label="Le comité en étoile : un CEO au centre, sept directions autour">
+          <g class="rot">
+            <circle class="halo" cx="220" cy="220" r="150"/>
+            <line class="spoke" x1="220" y1="220" x2="220" y2="70"/>
+            <line class="spoke" x1="220" y1="220" x2="337" y2="127"/>
+            <line class="spoke" x1="220" y1="220" x2="366" y2="253"/>
+            <line class="spoke" x1="220" y1="220" x2="285" y2="355"/>
+            <line class="spoke" x1="220" y1="220" x2="155" y2="355"/>
+            <line class="spoke" x1="220" y1="220" x2="74"  y2="253"/>
+            <line class="spoke" x1="220" y1="220" x2="103" y2="127"/>
+            <g><circle class="node" cx="220" cy="70"  r="27"/><text class="lbl" x="220" y="70">COO</text></g>
+            <g><circle class="node" cx="337" cy="127" r="27"/><text class="lbl" x="337" y="127">CTO</text></g>
+            <g><circle class="node" cx="366" cy="253" r="27"/><text class="lbl" x="366" y="253">CMO</text></g>
+            <g><circle class="node" cx="285" cy="355" r="27"/><text class="lbl" x="285" y="355">CRO</text></g>
+            <g><circle class="node" cx="155" cy="355" r="27"/><text class="lbl" x="155" y="355">CFO</text></g>
+            <g><circle class="node" cx="74"  cy="253" r="27"/><text class="lbl" x="74"  y="253">CPO</text></g>
+            <g><circle class="node" cx="103" cy="127" r="27"/><text class="lbl" x="103" y="127">CoS</text></g>
+          </g>
+          <circle class="hub" cx="220" cy="220" r="38"/>
+          <text class="lbl lbl-hub" x="220" y="220">CEO</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- № 01 · LE RENVERSEMENT -->
+  <section class="act reveal" id="renversement">
+    <div class="rail"><span class="node-no">01</span></div>
+    <div class="act-body">
+      <p class="act-label" data-i18n="s1.label">Le renversement</p>
+      <h2 data-i18n="s1.h">Vous au <em>stratégique</em>. Les agents à l'exécution.</h2>
+      <p class="intro" data-i18n="s1.intro">Aujourd'hui, vous cherchez l'information dispersée, vous mettez à jour dix applications, vous rédigez, vous relancez, vous produisez des reportings. DEOS renverse la charge.</p>
+      <div class="compare">
+        <div class="col now">
+          <p class="ch" data-i18n="s1.nowh">Aujourd'hui</p>
+          <ul>
+            <li data-i18n="s1.n1">Rechercher l'information dispersée</li>
+            <li data-i18n="s1.n2">Mettre à jour plusieurs applications</li>
+            <li data-i18n="s1.n3">Rédiger documents et comptes-rendus</li>
+            <li data-i18n="s1.n4">Suivre des tâches, relancer</li>
+            <li data-i18n="s1.n5">Produire des reportings</li>
+          </ul>
+        </div>
+        <div class="col deos">
+          <p class="ch" data-i18n="s1.deosh">Avec DEOS</p>
+          <ul>
+            <li data-i18n="s1.d1">Vous gardez la stratégie et l'arbitrage</li>
+            <li data-i18n="s1.d2">Les agents exécutent et coordonnent</li>
+            <li data-i18n="s1.d3">Une mémoire unique et gouvernée</li>
+            <li data-i18n="s1.d4">Des décisions tracées et justifiées</li>
+            <li data-i18n="s1.d5">Une entreprise qui apprend en continu</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- № 02 · LES FONDATIONS -->
+  <section class="act reveal" id="fondations">
+    <div class="rail"><span class="node-no">02</span></div>
+    <div class="act-body">
+      <p class="act-label" data-i18n="s2.label">Les fondations</p>
+      <h2 data-i18n="s2.h">Huit principes <em>fondateurs</em>.</h2>
+      <p class="intro" data-i18n="s2.intro">Ce qui tient l'ensemble. Aucun n'est négociable.</p>
+      <div class="grid g4">
+        <div class="card"><p class="k">01</p><h3 data-i18n="s2.p1t">Propriété</h3><p data-i18n="s2.p1p">Les données appartiennent à l'entreprise, jamais au modèle.</p></div>
+        <div class="card"><p class="k">02</p><h3 data-i18n="s2.p2t">Spécialisation</h3><p data-i18n="s2.p2p">Un collectif organisé surpasse un agent généraliste.</p></div>
+        <div class="card"><p class="k">03</p><h3 data-i18n="s2.p3t">Mémoire</h3><p data-i18n="s2.p3p">La mémoire est un actif stratégique.</p></div>
+        <div class="card"><p class="k">04</p><h3 data-i18n="s2.p4t">Gouvernance</h3><p data-i18n="s2.p4p">La gouvernance précède l'autonomie.</p></div>
+        <div class="card"><p class="k">05</p><h3 data-i18n="s2.p5t">Explicabilité</h3><p data-i18n="s2.p5p">Toute décision est explicable de bout en bout.</p></div>
+        <div class="card"><p class="k">06</p><h3 data-i18n="s2.p6t">Qualité</h3><p data-i18n="s2.p6p">La qualité prévaut sur la vitesse.</p></div>
+        <div class="card"><p class="k">07</p><h3 data-i18n="s2.p7t">Coût</h3><p data-i18n="s2.p7p">Le coût d'inférence est un KPI à part entière.</p></div>
+        <div class="card"><p class="k">08</p><h3 data-i18n="s2.p8t">Équipe</h3><p data-i18n="s2.p8p">Les agents délèguent, se relisent, se challengent.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- № 03 · LE COMITÉ -->
+  <section class="act reveal" id="comite">
+    <div class="rail"><span class="node-no">03</span></div>
+    <div class="act-body">
+      <p class="act-label" data-i18n="s3.label">Le comité</p>
+      <h2 data-i18n="s3.h">Un comité qui se <em>réunit</em> vraiment.</h2>
+      <p class="intro" data-i18n="s3.intro">Sept rôles, sept périmètres, sept jeux de KPI. Des agents incarnés : en réunion, chacun expose sa position ; le CEO conclut par une recommandation argumentée.</p>
+      <div class="grid g3">
+        <div class="card"><p class="k">CEO</p><h3 data-i18n="s3.ceoh">Piloter, arbitrer, décider</h3><p class="kpi">ARR · MRR · NPS · Runway</p><p class="trait" data-i18n="s3.ceot">Calme · synthétique · décision</p></div>
+        <div class="card"><p class="k">COO</p><h3 data-i18n="s3.cooh">Faire fonctionner l'entreprise</h3><p class="kpi">SLA · Lead time · Delivery</p></div>
+        <div class="card"><p class="k">CTO</p><h3 data-i18n="s3.ctoh">Construire &amp; sécuriser</h3><p class="kpi">Availability · MTTR · AI cost</p><p class="trait" data-i18n="s3.ctot">Technique · factuel</p></div>
+        <div class="card"><p class="k">CMO</p><h3 data-i18n="s3.cmoh">Créer la demande &amp; la marque</h3><p class="kpi">MQL · CAC · Conversion</p><p class="trait" data-i18n="s3.cmot">Créatif · croissance</p></div>
+        <div class="card"><p class="k">CRO</p><h3 data-i18n="s3.croh">Transformer en revenus</h3><p class="kpi">Pipeline · Win rate · Revenue</p><p class="trait" data-i18n="s3.crot">Énergique · résultats</p></div>
+        <div class="card"><p class="k">CFO</p><h3 data-i18n="s3.cfoh">Garantir la santé financière</h3><p class="kpi">Cash · Burn · Gross margin</p><p class="trait" data-i18n="s3.cfot">Prudent · analytique</p></div>
+        <div class="card"><p class="k">CPO</p><h3 data-i18n="s3.cpoh">Construire le bon produit</h3><p class="kpi">Adoption · Retention · TTV</p></div>
+        <div class="card"><p class="k" data-i18n="s3.cosk">Chief of Staff</p><h3 data-i18n="s3.cosh">Orchestrer le comité</h3><p class="kpi">OKR · Décisions · Reportings</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- № 04 · LA GOUVERNANCE -->
+  <section class="act reveal" id="gouvernance">
+    <div class="rail"><span class="node-no">04</span></div>
+    <div class="act-body">
+      <p class="act-label" data-i18n="s4.label">La gouvernance</p>
+      <h2 data-i18n="s4.h">L'autonomie n'existe que si vous l'<em>accordez</em>.</h2>
+      <p class="intro" data-i18n="s4.intro">Conçu pour le cadre européen. Souveraineté et contrôle humain, par conception — RGPD art. 22, AI Act art. 14. Aucune clôture sans preuve.</p>
+      <div class="cursor" role="list" aria-label="Curseur d'autonomie">
+        <div class="step" role="listitem"><span class="n">01</span><p class="t" data-i18n="s4.cur1">Observe</p></div>
+        <div class="step" role="listitem"><span class="n">02</span><p class="t" data-i18n="s4.cur2">Conseille</p></div>
+        <div class="step" role="listitem"><span class="n">03</span><p class="t" data-i18n="s4.cur3">Agit sous validation</p></div>
+        <div class="step" role="listitem"><span class="n">04</span><p class="t" data-i18n="s4.cur4">Agit en autonomie</p></div>
+      </div>
+      <div class="grid g3">
+        <div class="card"><p class="k" data-i18n="s4.k1">Hallucinations</p><p data-i18n="s4.v1">Toute affirmation sans source est traitée comme une hypothèse.</p></div>
+        <div class="card"><p class="k" data-i18n="s4.k2">Inflation mémoire</p><p data-i18n="s4.v2">Un cycle de vie obligatoire par donnée.</p></div>
+        <div class="card"><p class="k" data-i18n="s4.k3">Explosion des coûts</p><p data-i18n="s4.v3">Multi-modèles, coût comme KPI, limites explicites.</p></div>
+        <div class="card"><p class="k" data-i18n="s4.k4">Dérive des agents</p><p data-i18n="s4.v4">Évaluation continue, détection de dérive.</p></div>
+        <div class="card"><p class="k" data-i18n="s4.k5">Boucles infinies</p><p data-i18n="s4.v5">Timeout, profondeur et itérations plafonnées.</p></div>
+        <div class="card"><p class="k" data-i18n="s4.k6">Action externe</p><p data-i18n="s4.v6">Toute action sur le monde suit une politique explicite.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- № 05 · TROIS ÉCHELLES -->
+  <section class="act reveal" id="echelles">
+    <div class="rail"><span class="node-no">05</span></div>
+    <div class="act-body">
+      <p class="act-label" data-i18n="s5.label">Trois échelles</p>
+      <h2 data-i18n="s5.h">Un socle. <em>Trois échelles</em>.</h2>
+      <p class="intro" data-i18n="s5.intro">Une seule chose à maintenir, déclinée selon votre besoin. Digital·Humans et l'outil DSI sont deux exemples de ce que l'on bâtit avec le socle. Modulable, sur devis après analyse.</p>
+      <div class="scales">
+        <div class="scale lead">
+          <p class="lvl" data-i18n="s5.l1">01 · L'organisation complète</p>
+          <h3 data-i18n="s5.t1">DEOS <em>global</em></h3>
+          <p class="agents" data-i18n="s5.a1">35–40 agents</p>
+          <p data-i18n="s5.p1">L'entreprise entière incarnée par une organisation d'agents, du comité aux équipes.</p>
+        </div>
+        <div class="scale">
+          <span class="ex" data-i18n="s5.ex2">Exemple</span>
+          <p class="lvl" data-i18n="s5.l2">02 · Une application</p>
+          <h3>Digital·<em>Humans</em></h3>
+          <p data-i18n="s5.p2">Le studio d'ingénierie Salesforce autonome. Onze agents, du brief au déploiement.</p>
+        </div>
+        <div class="scale">
+          <span class="ex" data-i18n="s5.ex3">Exemple</span>
+          <p class="lvl" data-i18n="s5.l3">03 · Une application</p>
+          <h3 data-i18n="s5.t3">Outil <em>DSI</em></h3>
+          <p data-i18n="s5.p3">Une déclinaison d'aide à la décision, au service du pilotage d'une DSI.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- № 06 · LE COCKPIT -->
+  <section class="act reveal" id="cockpit">
+    <div class="rail"><span class="node-no">06</span></div>
+    <div class="act-body">
+      <p class="act-label" data-i18n="s6.label">Le cockpit</p>
+      <h2 data-i18n="s6.h">Vous dialoguez avec votre <em>entreprise</em>.</h2>
+      <p class="intro" data-i18n="s6.intro">Le dirigeant ne pilote plus des outils. Il voit, il valide, il gouverne — du signal à la décision, jusqu'à l'apprentissage. Une seule vérité : la mémoire d'entreprise et son knowledge graph.</p>
+    </div>
+  </section>
+
+  <!-- № 07 · LA FILIATION -->
+  <section class="act reveal" id="filiation">
+    <div class="rail"><span class="node-no">07</span></div>
+    <div class="act-body">
+      <p class="act-label" data-i18n="s7.label">La filiation</p>
+      <h2 data-i18n="s7.h">Né de la <em>pratique</em>.</h2>
+      <p class="intro" data-i18n="s7.intro">DEOS est né de la pratique de Sam Hatit Consulting et s'est éprouvé sur Digital·Humans. La même technologie multi-agents, portée à l'échelle de l'entreprise.</p>
+      <a href="https://digital-humans.fr" class="arrow-link" data-i18n="s7.link">Voir Digital·Humans</a>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact reveal" id="contact">
+    <p class="eyebrow" style="justify-content:center" data-i18n="s8.label">L'accès</p>
+    <h2 data-i18n="s8.h">Parlons de votre <em>entreprise</em>.</h2>
+    <p data-i18n="s8.p">DEOS s'ouvre par étapes. Demandez un accès, ou simplement un échange.</p>
+    <div class="cta-row" style="justify-content:center">
+      <a href="#" class="btn" data-i18n="s8.cta">Demander un accès</a>
+      <a href="mailto:contact@deos.cloud" class="arrow-link">contact@deos.cloud</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>© MMXXVI · DEOS</span>
+  <span class="maison"><a href="https://samhatit-consulting.cloud" data-i18n="foot.maison">Une solution SH Conseil ↗</a></span>
+  <a href="mailto:contact@deos.cloud">contact@deos.cloud</a>
+</footer>
+
+<script>
+const EN = {
+  'skip':'Skip to content',
+  'nav.1':'The shift','nav.2':'The committee','nav.3':'Governance','nav.4':'Three scales','nav.5':'Access',
+  'hero.eyebrow':"DEOS · the enterprise operating system",
+  'hero.h1':'Not an assistant. An <em>operating system</em> for your enterprise.',
+  'hero.sub':"You no longer operate software. You hold a conversation with your enterprise.",
+  'hero.lede':"You keep strategy and judgment. An organization of agents takes over execution and coordination — on one governed memory, with decisions traced and justified. An enterprise that learns, continuously.",
+  'hero.cta':'Request access','hero.cta2':'See the committee',
+  's1.label':'The shift','s1.h':'You on <em>strategy</em>. Agents on execution.',
+  's1.intro':'Today you hunt for scattered information, update ten applications, write, chase, produce reports. DEOS reverses the load.',
+  's1.nowh':'Today','s1.n1':'Hunt for scattered information','s1.n2':'Update several applications','s1.n3':'Write documents and minutes','s1.n4':'Track tasks, chase','s1.n5':'Produce reports',
+  's1.deosh':'With DEOS','s1.d1':'You keep strategy and judgment','s1.d2':'Agents execute and coordinate','s1.d3':'One governed memory','s1.d4':'Decisions traced and justified','s1.d5':'An enterprise that learns continuously',
+  's2.label':'The foundations','s2.h':'Eight founding <em>principles</em>.','s2.intro':'What holds it together. None is negotiable.',
+  's2.p1t':'Ownership','s2.p1p':'Data belongs to the enterprise, never to the model.',
+  's2.p2t':'Specialization','s2.p2p':'An organized collective beats a generalist agent.',
+  's2.p3t':'Memory','s2.p3p':'Memory is a strategic asset.',
+  's2.p4t':'Governance','s2.p4p':'Governance precedes autonomy.',
+  's2.p5t':'Explainability','s2.p5p':'Every decision is explainable end to end.',
+  's2.p6t':'Quality','s2.p6p':'Quality prevails over speed.',
+  's2.p7t':'Cost','s2.p7p':'Inference cost is a KPI in its own right.',
+  's2.p8t':'Team','s2.p8p':'Agents delegate, review themselves, challenge each other.',
+  's3.label':'The committee','s3.h':'A committee that truly <em>convenes</em>.',
+  's3.intro':'Seven roles, seven perimeters, seven KPI sets. Embodied agents: in session each states its position; the CEO closes with a reasoned recommendation.',
+  's3.ceoh':'Steer, arbitrate, decide','s3.ceot':'Calm · synthetic · decisive',
+  's3.cooh':'Run the enterprise',
+  's3.ctoh':'Build &amp; secure','s3.ctot':'Technical · factual',
+  's3.cmoh':'Create demand &amp; brand','s3.cmot':'Creative · growth',
+  's3.croh':'Turn into revenue','s3.crot':'Energetic · results',
+  's3.cfoh':'Safeguard financial health','s3.cfot':'Prudent · analytical',
+  's3.cpoh':'Build the right product',
+  's3.cosk':'Chief of Staff','s3.cosh':'Orchestrate the committee',
+  's4.label':'Governance','s4.h':"Autonomy exists only if you <em>grant</em> it.",
+  's4.intro':'Built for the European frame. Sovereignty and human control by design — GDPR art. 22, AI Act art. 14. No closure without proof.',
+  's4.cur1':'Observes','s4.cur2':'Advises','s4.cur3':'Acts on approval','s4.cur4':'Acts autonomously',
+  's4.k1':'Hallucinations','s4.v1':'Any claim without a source is treated as a hypothesis.',
+  's4.k2':'Memory inflation','s4.v2':'A mandatory lifecycle for every piece of data.',
+  's4.k3':'Cost blow-up','s4.v3':'Multi-model, cost as KPI, explicit limits.',
+  's4.k4':'Agent drift','s4.v4':'Continuous evaluation, drift detection.',
+  's4.k5':'Infinite loops','s4.v5':'Timeout, depth and iterations capped.',
+  's4.k6':'External action','s4.v6':'Any action on the world follows an explicit policy.',
+  's5.label':'Three scales','s5.h':'One foundation. <em>Three scales</em>.',
+  's5.intro':'One thing to maintain, scaled to your need. Digital·Humans and the IT-department tool are two examples of what the foundation builds. Modular, quoted after analysis.',
+  's5.l1':'01 · The full organization','s5.t1':'DEOS <em>global</em>','s5.a1':'35–40 agents',
+  's5.p1':'The whole enterprise embodied by an organization of agents, from the committee to the teams.',
+  's5.ex2':'Example','s5.l2':'02 · An application','s5.p2':'The autonomous Salesforce engineering studio. Eleven agents, from brief to deployment.',
+  's5.ex3':'Example','s5.l3':'03 · An application','s5.t3':'IT-department <em>tool</em>','s5.p3':'A decision-support variant, serving the steering of an IT department.',
+  's6.label':'The cockpit','s6.h':'You converse with your <em>enterprise</em>.',
+  's6.intro':'The leader no longer steers tools. They see, they approve, they govern — from signal to decision to learning. One truth: the enterprise memory and its knowledge graph.',
+  's7.label':'The lineage','s7.h':'Born of <em>practice</em>.',
+  's7.intro':'DEOS was born of the practice of Sam Hatit Consulting and proven on Digital·Humans. The same multi-agent technology, taken to enterprise scale.',
+  's7.link':'See Digital·Humans',
+  's8.label':'Access','s8.h':'Let’s talk about your <em>enterprise</em>.',
+  's8.p':'DEOS opens in phases. Request access, or simply a conversation.',
+  's8.cta':'Request access',
+  'foot.maison':'A SH Conseil solution ↗'
+};
+const nodes = document.querySelectorAll('[data-i18n]');
+const FR = {}; nodes.forEach(n=>FR[n.dataset.i18n]=n.innerHTML);
+const langBtns = document.querySelectorAll('.lang button');
+function setLang(l){
+  document.documentElement.lang=l;
+  nodes.forEach(n=>{ const k=n.dataset.i18n; const v=(l==='en'?EN[k]:FR[k]); if(v!=null) n.innerHTML=v; });
+  langBtns.forEach(b=>b.setAttribute('aria-pressed', b.dataset.lang===l));
+  try{localStorage.setItem('deos-lang',l)}catch(e){}
+}
+langBtns.forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+
+const themeBtn=document.querySelector('.theme');
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  themeBtn.setAttribute('aria-pressed', t==='light');
+  themeBtn.textContent = t==='light' ? '☾' : '◐';
+  try{localStorage.setItem('deos-theme',t)}catch(e){}
+}
+themeBtn.addEventListener('click',()=>setTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'));
+
+(function init(){
+  let l='fr', t='dark';
+  try{
+    const sl=localStorage.getItem('deos-lang'); if(sl==='en'||sl==='fr') l=sl;
+    const st=localStorage.getItem('deos-theme');
+    t=(st==='light'||st==='dark')?st:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+  }catch(e){}
+  setLang(l); setTheme(t);
+})();
+
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

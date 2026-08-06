@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entracte — Digital·Humans</title>
+<meta name="description" content="Digital·Humans fait une pause le temps de se conformer aux nouvelles obligations européennes de transparence sur l'intelligence artificielle. Retour imminent.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E0E10;
+  --ink-deep:#08080A;
+  --bone:#F5F2EA;
+  --brass:#C8A97E;
+  --brass-dim:#8A7550;
+  --grey:#7D786F;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--ink);color:var(--bone);
+  font-family:var(--mono);font-weight:300;font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.rideau{
+  position:fixed;top:0;left:0;right:0;height:34vh;min-height:190px;z-index:2;
+  background:
+    linear-gradient(180deg,var(--ink-deep) 0%,#141416 62%,#0B0B0D 100%),
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,.030) 0px, rgba(255,255,255,.030) 1px,
+      transparent 1px, transparent 13px);
+  background-blend-mode:overlay;
+  border-bottom:1px solid var(--brass-dim);
+  box-shadow:0 26px 60px -20px rgba(0,0,0,.95);
+  overflow:hidden;
+  transform:translateY(-101%);
+  animation:descendre 1500ms cubic-bezier(.22,.68,.24,1) 250ms forwards;
+}
+.rideau::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--brass) 18%,#E5CFA4 50%,var(--brass) 82%,transparent);
+  opacity:0;animation:allumer 1100ms ease-out 1500ms forwards, respirer 6s ease-in-out 2600ms infinite;
+}
+.rideau::before{
+  content:"";position:absolute;left:0;right:0;bottom:18px;height:3px;
+  background-image:radial-gradient(circle,var(--brass-dim) 40%,transparent 42%);
+  background-size:34px 3px;opacity:.30;
+}
+@keyframes descendre{to{transform:translateY(0)}}
+@keyframes allumer{to{opacity:1}}
+@keyframes respirer{0%,100%{opacity:1}50%{opacity:.55}}
+.marque{
+  position:absolute;left:0;right:0;bottom:38px;
+  text-align:center;padding:0 24px;
+  opacity:0;animation:paraitre 900ms ease-out 1250ms forwards;
+}
+.marque .nom{font-family:var(--serif);font-size:clamp(26px,4.6vw,40px);letter-spacing:.015em;color:var(--bone)}
+.marque .nom em{font-style:italic;color:var(--brass)}
+.marque .sous{
+  font-size:9.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--grey);margin-top:9px;
+}
+main{
+  position:relative;z-index:1;
+  padding:calc(34vh + 74px) 26px 90px;
+  max-width:660px;margin:0 auto;
+}
+@media(max-height:640px){main{padding-top:calc(190px + 60px)}}
+.acte{
+  font-size:9.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--brass);
+  margin-bottom:22px;
+}
+h1{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(38px,7.6vw,62px);line-height:1.06;letter-spacing:-.012em;
+  margin-bottom:34px;
+}
+h1 em{font-style:italic;color:var(--brass)}
+p{margin-bottom:22px;color:#CFCAC0;max-width:56ch}
+p strong{font-weight:400;color:var(--bone)}
+.lead{font-family:var(--serif);font-size:clamp(19px,2.5vw,23px);line-height:1.62;color:var(--bone);font-style:italic}
+.filet{
+  height:1px;margin:44px 0 40px;
+  background:linear-gradient(90deg,var(--brass-dim),transparent 72%);
+}
+.note{
+  border-left:1px solid var(--brass-dim);padding:4px 0 4px 22px;
+  font-size:14px;color:var(--grey);
+}
+.note em{color:var(--bone);font-style:normal}
+.pied{
+  margin-top:52px;display:flex;flex-wrap:wrap;gap:12px 30px;align-items:baseline;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);
+}
+a{color:var(--brass);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .25s}
+a:hover,a:focus-visible{border-bottom-color:var(--brass)}
+a:focus-visible{outline:2px solid var(--brass);outline-offset:4px;border-radius:1px}
+.reveler{opacity:0;transform:translateY(9px);animation:paraitre 800ms cubic-bezier(.2,.6,.3,1) forwards}
+.d1{animation-delay:1750ms}.d2{animation-delay:1900ms}.d3{animation-delay:2050ms}
+.d4{animation-delay:2200ms}.d5{animation-delay:2350ms}.d6{animation-delay:2500ms}.d7{animation-delay:2650ms}
+@keyframes paraitre{to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+  .rideau{transform:none;animation:none}
+  .rideau::after{opacity:1;animation:none}
+  .marque,.reveler{opacity:1;transform:none;animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="rideau" role="presentation">
+  <div class="marque">
+    <div class="nom">Digital<em>·</em>Humans</div>
+    <div class="sous">Autonomous Studio · Est MMXXV</div>
+  </div>
+</div>
+
+<main>
+  <div class="acte reveler d1">Entracte</div>
+
+  <h1 class="reveler d2">Pas une panne.<br>Un <em>entracte</em>.</h1>
+
+  <p class="lead reveler d3">Nous avons baissé le rideau de nous-mêmes, le temps de mettre nos actes en conformité avec le nouveau cadre européen sur l'intelligence artificielle.</p>
+
+  <p class="reveler d4">Depuis le 2 août 2026, le règlement européen impose de nouvelles obligations de transparence à quiconque expose une intelligence artificielle au public. Nous préférons nous y conformer <strong>avant</strong> d'ouvrir nos portes, plutôt qu'après. C'est la même exigence que celle que nous appliquons à notre studio : rien ne sort sans être vérifié, et rien n'est promis qui ne soit démontré.</p>
+
+  <div class="filet reveler d5"></div>
+
+  <p class="reveler d5">Nos excuses à celles et ceux qui passaient nous voir aujourd'hui, et à celles et ceux qui nous attendaient. Ce désagrément sera court.</p>
+
+  <p class="note reveler d6"><em>Aux premiers compagnons de route</em> — vous ne repartirez pas les mains vides. Nous préparons quelque chose pour celles et ceux qui nous auront fait confiance les premiers.</p>
+
+  <div class="pied reveler d7">
+    <span>Retour imminent</span>
+    <a href="mailto:contact@digital-humans.fr">contact@digital-humans.fr</a>
+  </div>
+</main>
+
+</body>
+</html>
