@@ -2,6 +2,11 @@
 # Seuls index.html courant et la version pre-entracte sont conserves.
 index.html.pre-*
 index.html.GOOD-*
+# EXCEPTION (14/08) : index.html.site-complet est la version de reference du
+# VRAI site — celle que nginx doit servir apres la bascule. Elle DOIT etre
+# versionnee : index.html sur le serveur est la page Entracte, et les GOOD-*
+# sont exclus, donc le site n existait sur AUCUNE sauvegarde.
+!index.html.site-complet
 index.html.bak*
 *.bak
 node_modules/
