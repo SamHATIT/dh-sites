@@ -7,6 +7,10 @@ index.html.GOOD-*
 # versionnee : index.html sur le serveur est la page Entracte, et les GOOD-*
 # sont exclus, donc le site n existait sur AUCUNE sauvegarde.
 !index.html.site-complet
+# EXCEPTION (17/08) : variante portant la mention IA, retrouvee sur le
+# serveur et sauvegardee nulle part. Empreinte differente de
+# site-complet — c'est une VERSION DISTINCTE, pas une copie.
+!index.html.avec-mention-ia
 index.html.bak*
 *.bak
 node_modules/
