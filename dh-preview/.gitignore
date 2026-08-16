@@ -3,3 +3,7 @@
 *.pre-*
 node_modules/
 index.html.avec-mention-ia
+# EXCEPTION (17/08) : cette variante n'existait QUE sur le serveur.
+# Empreinte d3cbd721, distincte de site-complet (0cc8817a) — c'est une
+# version differente, pas une copie. Elle porte la mention IA.
+!index.html.avec-mention-ia
