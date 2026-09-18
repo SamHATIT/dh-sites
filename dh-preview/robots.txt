@@ -1,0 +1,8 @@
+# digital-humans.fr — ouverture du 17/09/2026
+User-agent: *
+Allow: /
+Disallow: /apercu-recent/
+Disallow: /holding-preview/
+Disallow: /sds-preview/
+
+Sitemap: https://digital-humans.fr/sitemap.xml

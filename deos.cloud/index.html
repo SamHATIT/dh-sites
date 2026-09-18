@@ -186,6 +186,7 @@ a{color:inherit}
 .footer a{color:var(--bone-3);text-decoration:none;transition:color .2s}
 .footer a:hover{color:var(--accent)}
 .footer .maison a{color:var(--accent)}
+.footer .legal{display:flex;gap:18px;flex-wrap:wrap}
 
 .reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
 .reveal.in{opacity:1;transform:none}
@@ -436,6 +437,7 @@ a{color:inherit}
 <footer class="footer">
   <span>© MMXXVI · DEOS</span>
   <span class="maison"><a href="https://samhatit-consulting.cloud" data-i18n="foot.maison">Une solution SH Conseil ↗</a></span>
+  <span class="legal"><a href="/legal" data-i18n="foot.legal">Mentions légales</a> <a href="/privacy" data-i18n="foot.privacy">Confidentialité</a></span>
   <a href="mailto:contact@deos.cloud">contact@deos.cloud</a>
 </footer>
 
@@ -494,7 +496,7 @@ const EN = {
   's8.label':'Access','s8.h':'Let’s talk about your <em>enterprise</em>.',
   's8.p':'DEOS opens in phases. Request access, or simply a conversation.',
   's8.cta':'Request access',
-  'foot.maison':'A SH Conseil solution ↗'
+  'foot.maison':'A SH Conseil solution ↗','foot.legal':'Legal notice','foot.privacy':'Privacy'
 };
 const nodes = document.querySelectorAll('[data-i18n]');
 const FR = {}; nodes.forEach(n=>FR[n.dataset.i18n]=n.innerHTML);
